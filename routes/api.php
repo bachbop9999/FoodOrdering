@@ -14,4 +14,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('products', 'Api\ProductController@index');
+Route::get('users', 'Api\ProductController@getUsers');
+Route::post('insert', 'Api\ProductController@insertUser');
