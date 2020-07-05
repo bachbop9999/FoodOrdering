@@ -12,6 +12,7 @@ use App\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -107,6 +108,16 @@ class ProductController extends Controller
                 'token' => $token
             ]
         ]);
+    }
+    public function user(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            return response($user, Response::HTTP_OK);
+        }
+
+        return response(null, Response::HTTP_BAD_REQUEST);
     }
     // public function getUserInfo(Request $request){
     //     $user = JWTAuth::toUser($request->token);
