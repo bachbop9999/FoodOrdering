@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use JWTAuth;
-use JWTAuthException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Hash;
 use App\User;
 use Illuminate\Http\Response;
@@ -14,38 +13,27 @@ use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Auth;
 
-class ProductController extends Controller
+class UserController extends Controller
 {
 
-    // public function getUsers()
-    // {
-    //     $temp = DB::table('users')->get();
-    //     return response()->json($temp, 200);
-    // }
+    public function getUsers()
+    {
+        $temp = DB::table('users')->get();
+        return response()->json($temp, Response::HTTP_OK);
+    }
 
-    // public function insertUser(Request $request)
-    // {
-    //     $input = $request->only('username', 'email', 'password', 'fullname', 'phone', 'address');
 
-    //     DB::table('users')->insert(
-    //         [
-    //             'username' => $input['username'], 'email' => $input['email'], 'password' => $input['password'],
-    //             'fullname' => $input['fullname'], 'phone' => $input['phone'],  'address' => $input['address']
-    //         ]
-    //     );
-    //     return response()->json('Insert successgully', 200);
-    // }
 
     public function register(Request $request)
     {
-        $input = $request->only('email', 'fullname', 'password','username','phone', 'address');
+        $input = $request->only('email', 'fullname', 'password', 'username', 'phone', 'address');
 
         $rules = [
             'email' => 'required|email||unique:users',
             'password' => 'required|string|min:6',
             'fullname' => 'required|string',
-            'username' => 'required|string||unique:users',
-            'phone' => 'required|string',
+            'username' => 'required|string|unique:users',
+            'phone' => 'required|string|min:10|max:10',
             'address' => 'required|string',
         ];
 
@@ -57,15 +45,14 @@ class ProductController extends Controller
         $user->address = $input['address'];
         $user->password = Hash::make($input['password']);
         $user->save();
-        
-        // $user = $this->user->create([
-        //     'fullname' => $request->get('fullname'),
-        //     'username' => $request->get('username'),
-        //     'phone' => $request->get('phone'),
-        //     'address' => $request->get('address'),
-        //     'email' => $request->get('email'),
-        //     'password' => Hash::make($request->get('password'))
-        // ]);
+
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' =>  $validator->getMessageBag()
+            ]);
+        }
 
         return response()->json([
             'status' => 200,
@@ -82,20 +69,20 @@ class ProductController extends Controller
             'password' => 'required|string|min:6'
         ];
         $validator = Validator::make($credentials, $rules);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
                 'message' =>  $validator->getMessageBag()
             ]);
         }
-        try{
-            if(! $token = JWTAuth::attempt($credentials)){
+        try {
+            if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'loi2'
                 ], 401);
             }
-        }catch(JWTException $e){
+        } catch (JWTException $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'loi3'
@@ -109,6 +96,23 @@ class ProductController extends Controller
             ]
         ]);
     }
+
+    public function logout(Request $request)
+    {
+        $token = $request->header('Authorization');
+        try {
+            JWTAuth::invalidate($token);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User log out successfully'
+            ]);
+        } catch (JWTException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Fail to log out, please try again'
+            ], 500);
+        }
+    }
     public function user(Request $request)
     {
         $user = Auth::user();
@@ -119,8 +123,4 @@ class ProductController extends Controller
 
         return response(null, Response::HTTP_BAD_REQUEST);
     }
-    // public function getUserInfo(Request $request){
-    //     $user = JWTAuth::toUser($request->token);
-    //     return response()->json(['result' => $user]);
-    // }
 }
