@@ -16,3 +16,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('users', 'Api\ProductController@getUsers');
 Route::post('insert', 'Api\ProductController@insertUser');
+
+Route::post('auth/register', 'Api\ProductController@register');
+Route::post('auth/login', 'Api\ProductController@login');
+
+Route::group(['middleware' => 'jwt.auth'], function () {
+    Route::get('auth', 'Api\ProductController@user');
+    Route::post('logout', 'Api\ProductController@logout');
+});
+
+Route::middleware('jwt.refresh')->get('/token/refresh', 'Api\ProductController@refresh');
