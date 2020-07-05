@@ -17,10 +17,12 @@ class ProductController extends Controller
 
     public function insertUser(Request $request)
     {
-        $input = $request->only('name', 'email', 'password');
+        $input = $request->only('username', 'email', 'password', 'fullname', 'phone', 'address');
 
         DB::table('users')->insert(
-            ['name' => $input['name'], 'email' => $input['email'], 'password'=> $input['password']]
+            ['username' => $input['username'], 'email' => $input['email'], 'password'=> $input['password'],
+            'fullname'=> $input['fullname'], 'phone'=> $input['phone'],  'address'=> $input['address']
+            ]
         );
         return response()->json('Insert successgully', 200);
     }
