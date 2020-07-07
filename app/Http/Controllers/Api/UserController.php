@@ -79,21 +79,19 @@ class UserController extends Controller
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'loi2'
+                    'message' => 'Your username or password is incorrect'
                 ], 401);
             }
         } catch (JWTException $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'loi3'
+                'message' => 'Error'
             ]);
         }
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'token' => $token
-            ]
+            'token' => $token
         ]);
     }
 
