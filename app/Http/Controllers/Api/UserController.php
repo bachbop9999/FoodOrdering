@@ -26,25 +26,18 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        $input = $request->only('email', 'fullname', 'password', 'username', 'phone', 'address');
+        $input = $request->only('email', 'password', 'username');
 
         $rules = [
             'email' => 'required|email||unique:users',
             'password' => 'required|string|min:6',
-            'fullname' => 'required|string',
+            // 'fullname' => 'string',
             'username' => 'required|string|unique:users',
-            'phone' => 'required|string|min:10|max:10',
-            'address' => 'required|string',
+            // 'phone' => 'string|min:10|max:10',
+            // 'address' => 'string',
         ];
 
-        $user = new User();
-        $user->email = $input['email'];
-        $user->fullname = $input['fullname'];
-        $user->username = $input['username'];
-        $user->phone = $input['phone'];
-        $user->address = $input['address'];
-        $user->password = Hash::make($input['password']);
-        $user->save();
+        
 
         $validator = Validator::make($input, $rules);
         if ($validator->fails()) {
@@ -53,7 +46,14 @@ class UserController extends Controller
                 'message' =>  $validator->getMessageBag()
             ]);
         }
-
+        $user = new User();
+        $user->email = $input['email'];
+        // $user->fullname = $input['fullname']?$input['fullname']:null;
+        $user->username = $input['username'];
+        // $user->phone = $input['phone']?$input['phone']:null;
+        // $user->address = $input['address']?$input['address']:null;
+        $user->password = Hash::make($input['password']);
+        $user->save();
         return response()->json([
             'status' => 200,
             'message' => 'User created successfully',
