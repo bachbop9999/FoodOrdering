@@ -11,7 +11,7 @@ class ProductController extends Controller
 {
     public function getPopularProduct()
     {
-        $temp = Product::orderBy('rating')->get();
+        $temp = Product::orderBy('rating', 'desc')->get();
         return response()->json($temp, Response::HTTP_OK);
     }
 }
