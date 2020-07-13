@@ -14,4 +14,16 @@ class ProductController extends Controller
         $temp = Product::orderBy('rating', 'desc')->get();
         return response()->json($temp, Response::HTTP_OK);
     }
+
+    public function getNewProduct()
+    {
+        $temp = Product::orderBy('created_at', 'desc')->get();
+        return response()->json($temp, Response::HTTP_OK);
+    }
+
+    public function getProductSortByPrice()
+    {
+        $temp = Product::orderBy('price')->get();
+        return response()->json($temp, Response::HTTP_OK);
+    }
 }
