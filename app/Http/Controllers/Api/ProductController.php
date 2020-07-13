@@ -7,23 +7,43 @@ use App\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 class ProductController extends Controller
 {
     public function getPopularProduct()
     {
-        $temp = Product::orderBy('rating', 'desc')->get();
-        return response()->json($temp, Response::HTTP_OK);
+        $popularProduct = Product::orderBy('rating', 'desc')->get();
+        return response()->json($popularProduct, Response::HTTP_OK);
     }
 
     public function getNewProduct()
     {
-        $temp = Product::orderBy('created_at', 'desc')->get();
-        return response()->json($temp, Response::HTTP_OK);
+        $newProduct = Product::orderBy('created_at', 'desc')->get();
+        return response()->json($newProduct, Response::HTTP_OK);
     }
 
     public function getProductSortByPrice()
     {
-        $temp = Product::orderBy('price')->get();
-        return response()->json($temp, Response::HTTP_OK);
+        $priceProduct = Product::orderBy('price')->get();
+        return response()->json($priceProduct, Response::HTTP_OK);
+    }
+
+    public function getDetailProduct(Request $request)
+    {
+        $input = $request->only('product_id');
+        $rules = [
+            'product_id' => 'required|integer|unique:products'
+        ];
+        
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' =>  $validator->getMessageBag()
+            ]);
+        }
+        $detailProduct = Product::find($input['product_id']);
+        return response()->json($detailProduct, Response::HTTP_OK);
+
     }
 }
