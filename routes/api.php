@@ -24,6 +24,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('users', 'Api\UserController@getUsers');
     Route::get('auth', 'Api\UserController@user');
     Route::post('logout', 'Api\UserController@logout');
+    Route::get('products', 'Api\ProductController@getPopularProduct');
 });
 
 Route::middleware('jwt.refresh')->get('/token/refresh', 'Api\UserController@refresh');
