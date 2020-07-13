@@ -11,7 +11,7 @@ class ProductController extends Controller
 {
     public function getPopularProduct()
     {
-        $temp = DB::table('products')->get();
+        $temp = Product::table('products')->get();
         return response()->json($temp, Response::HTTP_OK);
     }
 }
