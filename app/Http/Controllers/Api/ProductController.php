@@ -30,9 +30,9 @@ class ProductController extends Controller
 
     public function getDetailProduct(Request $request)
     {
-        $input = $request->only('product_id');
+        $input = $request->only('id');
         $rules = [
-            'product_id' => 'required|integer|unique:products'
+            'id' => 'required|integer|exists:products'
         ];
         
         $validator = Validator::make($input, $rules);
@@ -42,7 +42,7 @@ class ProductController extends Controller
                 'message' =>  $validator->getMessageBag()
             ]);
         }
-        $detailProduct = Product::find($input['product_id']);
+        $detailProduct = Product::find($input['id'])->first();
         return response()->json($detailProduct, Response::HTTP_OK);
 
     }
