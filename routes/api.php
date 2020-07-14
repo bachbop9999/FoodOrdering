@@ -29,4 +29,6 @@ Route::post('products-popular', 'Api\ProductController@getPopularProduct');
 Route::post('products-newest', 'Api\ProductController@getNewProduct');
 Route::post('products-price', 'Api\ProductController@getProductSortByPrice');
 Route::post('detail-product', 'Api\ProductController@getDetailProduct');
+Route::post('categories', 'Api\CategoryController@getListCategory');
+
 Route::middleware('jwt.refresh')->get('/token/refresh', 'Api\UserController@refresh');
