@@ -20,7 +20,8 @@ class Schedules extends Migration
             $table->integer('table_id')->unsigned();
             $table->foreign('table_id')->references('id')->on('table_order');
             $table->date('date_order');
-            $table->time('time_order');
+            $table->time('time_from');
+            $table->time('time_to');
             $table->timestamps();
         });
     }
