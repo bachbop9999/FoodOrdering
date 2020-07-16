@@ -13,7 +13,7 @@ class TableOrder extends Migration
      */
     public function up()
     {
-        Schema::create('table', function (Blueprint $table) {
+        Schema::create('table_order', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('table_no');
             $table->timestamps();
