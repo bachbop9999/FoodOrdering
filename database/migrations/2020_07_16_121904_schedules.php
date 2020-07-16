@@ -18,7 +18,7 @@ class Schedules extends Migration
             $table->integer('order_id')->unsigned();
             $table->foreign('order_id')->references('id')->on('orders');
             $table->integer('table_id')->unsigned();
-            $table->foreign('table_id')->references('id')->on('table');
+            $table->foreign('table_id')->references('id')->on('table_order');
             $table->date('date_order');
             $table->time('time_order');
             $table->timestamps();
