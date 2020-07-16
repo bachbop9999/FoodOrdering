@@ -42,7 +42,7 @@ class ProductController extends Controller
                 'message' =>  $validator->getMessageBag()
             ]);
         }
-        $detailProduct = Product::find($input['id'])->first();
+        $detailProduct = Product::find($input['id']);
         return response()->json($detailProduct, Response::HTTP_OK);
 
     }
