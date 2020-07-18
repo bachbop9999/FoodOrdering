@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+
 class OrderController extends Controller
 {
     public function test(Request $request)
@@ -19,29 +20,33 @@ class OrderController extends Controller
         $firstSchedule = Schedule::first();
         $temp = Carbon::parse('21:00:00');
         $temp2 = Carbon::parse('20:00:00');
-        if($temp->lt($temp2)){
+        if ($temp->lt($temp2)) {
             return response()->json('ok', Response::HTTP_OK);
-        }else{
+        } else {
             return response()->json('error', Response::HTTP_OK);
         }
-        // $rules = [
-        //     'category_id' => 'required|integer|exists:categories,id'
-        // ];
-        // $validator = Validator::make($input, $rules);
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' =>  $validator->getMessageBag()
-        //     ]);
-        // }
-       ;
+            // $rules = [
+            //     'category_id' => 'required|integer|exists:categories,id'
+            // ];
+            // $validator = Validator::make($input, $rules);
+            // if ($validator->fails()) {
+            //     return response()->json([
+            //         'status' => 'error',
+            //         'message' =>  $validator->getMessageBag()
+            //     ]);
+            // }
+        ;
         // return response()->json('ok', Response::HTTP_OK);
     }
-
+    public function test2(Request $request)
+    {
+        $input = $request->all();
+        $temp = $input;
+    }
     public function insertToOrder(Request $request)
     {
         $user = Auth::user();
-        $input = $request->only('total_price','status','payment_id');
+        $input = $request->only('total_price', 'status', 'payment_id');
         $rules = [
             'total_price' => 'required',
             'status' => 'required|string',
@@ -65,6 +70,33 @@ class OrderController extends Controller
             'message' => 'Order created successfully',
             'data' => $order
         ]);
+    }
 
+
+    public function applyVoucher(Request $request)
+    {
+        $input = $request->only('voucher_code');
+        $rules = [
+            'status' => 'required|string',
+        ];
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' =>  $validator->getMessageBag()
+            ]);
+        }
+        $discount_result = DB::table('voucher')->where('voucher_code', $input['voucher_code'])->first();
+        if($discount_result){
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'discount' => $discount_result->discount,
+            ]);
+        }
+        return response()->json([
+            'status' => Response::HTTP_BAD_REQUEST,
+            'message'=> 'Invalid Code'
+        ]);
+    
     }
 }

@@ -26,13 +26,14 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::post('logout', 'Api\UserController@logout');
     //insert to order
     Route::post('insert-order', 'Api\OrderController@insertToOrder');
+    
 });
+Route::post('apply-voucher', 'Api\OrderController@applyVoucher');
 
 
-
-//temp inside jwt
+//test
 Route::get('test', 'Api\OrderController@test');
-
+Route::post('test2', 'Api\OrderController@test2');
 //outside jwt
 Route::post('products-popular', 'Api\ProductController@getPopularProduct');
 Route::post('products-newest', 'Api\ProductController@getNewProduct');
