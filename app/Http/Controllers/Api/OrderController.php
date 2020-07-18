@@ -86,8 +86,10 @@ class OrderController extends Controller
                 'message' =>  $validator->getMessageBag()
             ]);
         }
-        $discount_result = DB::table('voucher')->where('voucher_code', $input['voucher_code'])->first();
+        $discount_result = DB::table('voucher')->where('voucher_code', strtoupper($input['voucher_code']))->first();
         if($discount_result){
+            //giam so lan su dung di 1
+            
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'discount' => $discount_result->discount,
