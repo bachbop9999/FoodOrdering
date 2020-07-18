@@ -89,7 +89,19 @@ class OrderController extends Controller
         $discount_result = DB::table('voucher')->where('voucher_code', strtoupper($input['voucher_code']))->first();
         if($discount_result){
             //giam so lan su dung di 1
-            
+            $time_before_apply =  DB::table('voucher')->where('id',$discount_result->id)->first()->time_use;
+            if($time_before_apply != 0){
+                $time_after_apply = $time_before_apply-1;
+                DB::table('voucher')->where('id',$discount_result->id)->update(['time_use', $time_after_apply]);
+            }else{
+                return response()->json([
+                    'status' => Response::HTTP_BAD_REQUEST,
+                    'message'=> 'This code has expired'
+                ]);
+            }
+           
+
+
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'discount' => $discount_result->discount,
