@@ -24,11 +24,14 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('users', 'Api\UserController@getUsers');
     Route::get('auth', 'Api\UserController@user');
     Route::post('logout', 'Api\UserController@logout');
+    //apply voucher code
+    Route::post('apply-voucher', 'Api\OrderController@applyVoucher');
+
     //insert to order
     Route::post('insert-order', 'Api\OrderController@insertToOrder');
     
 });
-Route::post('apply-voucher', 'Api\OrderController@applyVoucher');
+
 
 
 //test
