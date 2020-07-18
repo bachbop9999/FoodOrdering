@@ -77,7 +77,7 @@ class OrderController extends Controller
     {
         $input = $request->only('voucher_code');
         $rules = [
-            'status' => 'required|string',
+            'voucher_code' => 'required|string',
         ];
         $validator = Validator::make($input, $rules);
         if ($validator->fails()) {
