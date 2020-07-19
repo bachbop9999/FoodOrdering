@@ -26,12 +26,12 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        $input = $request->only('email', 'password', 'username');
+        $input = $request->only('email', 'password', 'username', 'fullname');
 
         $rules = [
             'email' => 'required|email||unique:users',
             'password' => 'required|string|min:6',
-            // 'fullname' => 'string',
+            'fullname' => 'required|string',
             'username' => 'required|string|unique:users',
             // 'phone' => 'string|min:10|max:10',
             // 'address' => 'string',

@@ -1,1 +1,1 @@
-Hello {{$name}} 
+Hello {{$name}} your email is {{$email}} and comment #{{$content}}
