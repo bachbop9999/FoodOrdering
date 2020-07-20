@@ -155,7 +155,7 @@ class OrderController extends Controller
 
         //send mail
         $emailController = new EmailController();
-        $emailController->sendEmailOrder($user->email, $user->fullname, $order->id, $date, $time_from, $time_to);
+        $emailController->sendEmailOrder($user->email, $user->fullname, $order->id, $date, $time_from, $time_to, $table_no);
 
         return response()->json([
             'status' => Response::HTTP_OK,

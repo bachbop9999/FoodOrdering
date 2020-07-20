@@ -1,1 +1,1 @@
-Hello {{$name}}, you have an order at {{$date}} from {{$timeFrom}} to {{$timeTo}}. Your order code is #{{$orderId}}, please show this email when you come to our restaurant.
+Hello {{$name}}, you have an order on {{$date}} from {{$timeFrom}} to {{$timeTo}} at Table no {{$table_no}}. Your order code is <b>#{{$orderId}}</b>, please show this email when you come to our restaurant.

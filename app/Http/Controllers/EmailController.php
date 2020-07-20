@@ -18,9 +18,9 @@ class EmailController extends Controller
         return response()->json('Send message successfully!', Response::HTTP_OK);
     }
 
-    public static function sendEmailOrder($email, $name, $oderId, $date, $time_from, $time_to)
+    public static function sendEmailOrder($email, $name, $oderId, $date, $time_from, $time_to, $table_no)
     {
-        Mail::send('mailOrder', array('name'=>$name, 'orderId'=>$oderId, 'date'=>$date, 'timeFrom'=>$time_from, 'timeTo'=>$time_to), function($message) use ($email){
+        Mail::send('mailOrder', array('name'=>$name, 'orderId'=>$oderId, 'date'=>$date, 'timeFrom'=>$time_from, 'timeTo'=>$time_to, 'table_no'=>$table_no), function($message) use ($email){
 	        $message->to($email, 'ITALIAN RESTAURANT')->subject('You ordered successfully');
 	    });
         // Session::flash('flash_message', 'Send message successfully!');
