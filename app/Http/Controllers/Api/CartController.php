@@ -57,10 +57,23 @@ class CartController extends Controller
     {
         $user = Auth::user();
         $listCart = Cart::where('user_id', $user->id)->get();
+        $data_array = [];
+        foreach ($listCart as $item) {
+            $price = Product::find($item->product_id)->price;
+            $temp_data = [
+                'amount' => $item->amount,
+                'id' => $item->id,
+                'imageUrl' => $item->imageUrl,
+                'name' => $item->name,
+                'product_id' => $item->product_id,
+                'price' => $price,
+            ];
+            array_push($data_array, $temp_data);
+        }
         return response()->json([
             'status' => Response::HTTP_OK,
-            'data' => $listCart,
-        ]);
+            'data' => $data_array,
+         ]);
     }
 
     public function removeByCartId(Request $request){
