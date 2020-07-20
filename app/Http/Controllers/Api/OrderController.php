@@ -178,6 +178,13 @@ class OrderController extends Controller
                 'message' =>  $validator->getMessageBag()
             ]);
         }
+        $discount_result = Voucher::where('voucher_code', strtoupper($input['voucher_code']))->first();
+        if(!$discount_result){
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'This code has expired'
+            ]);
+        }
         //check if user used voucher
         $string_voucher_code = $user->array_voucher;
         
@@ -193,7 +200,7 @@ class OrderController extends Controller
             }
         }
         $currenUser = User::find($user->id);
-        $discount_result = Voucher::where('voucher_code', strtoupper($input['voucher_code']))->first();
+       
         if ($discount_result) {
             //giam so lan su dung di 1
             $time_before_apply =  Voucher::where('id', $discount_result->id)->first()->time_use;
@@ -211,13 +218,7 @@ class OrderController extends Controller
                     $currenUser->save();
 
                 }
-            } else {
-                return response()->json([
-                    'status' => Response::HTTP_BAD_REQUEST,
-                    'message' => 'This code has expired'
-                ]);
             }
-
 
 
             return response()->json([
