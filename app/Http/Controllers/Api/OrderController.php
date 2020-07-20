@@ -120,10 +120,9 @@ class OrderController extends Controller
         if($table_no ==0){
             return response()->json([
                 'status' => 'error',
-                'message' =>  'All of tables are ordered at this time range. Please choose other time range'
+                'message' =>  'All of tables are ordered at this time range. Please choose other time range.'
             ]);
         }
-
 
 
         //save to order

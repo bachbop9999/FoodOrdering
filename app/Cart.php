@@ -4,16 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 
 
-class User extends Authenticatable implements JWTSubject
+class Cart extends Model
 {
     //
-    // protected $table = 'users';
-    // protected $primaryKey = 'id';
+    protected $table = 'cart';
+    protected $primaryKey = 'id';
     
 
     public $timestamps = true;
@@ -26,16 +23,13 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'username',
-        'fullname',
-        'email',
-        'password',
-        'phone',
-        'address',
-        'confirm_code',
-        'is_active'
+        'product_id',
+        'name',
+        'imageUrl',
+        'amount',
+        'user_id'
     ];
-
+    
     /**
      * The attributes that should be hidden for arrays.
      *

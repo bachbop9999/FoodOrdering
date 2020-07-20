@@ -8,20 +8,19 @@ use Mail;
 use Illuminate\Http\Response;
 class EmailController extends Controller
 {
-    public function sendEmail(Request $request)
+    public function sendEmailConfirm($name, $confirm_code, $email)
     {
-        $input = $request->all();
-        Mail::send('mailfb', array('name'=>$input["name"]), function($message){
-	        $message->to('bachhvhe130603@fpt.edu.vn', 'ITALIAN RESTAURANT')->subject('Confirm Email');
+        Mail::send('mailfb', array('name'=>$name, 'confirm_code'=>$confirm_code), function($message) use ($email){
+	        $message->to($email, 'HEROIN RESTAURANT')->subject('Confirm Email');
 	    });
         // Session::flash('flash_message', 'Send message successfully!');
         return response()->json('Send message successfully!', Response::HTTP_OK);
     }
 
-    public static function sendEmailOrder($email, $name, $oderId, $date, $time_from, $time_to, $table_no)
+    public function sendEmailOrder($email, $name, $oderId, $date, $time_from, $time_to, $table_no)
     {
         Mail::send('mailOrder', array('name'=>$name, 'orderId'=>$oderId, 'date'=>$date, 'timeFrom'=>$time_from, 'timeTo'=>$time_to, 'table_no'=>$table_no), function($message) use ($email){
-	        $message->to($email, 'ITALIAN RESTAURANT')->subject('You ordered successfully');
+	        $message->to($email, 'HEROIN RESTAURANT')->subject('You ordered successfully');
 	    });
         // Session::flash('flash_message', 'Send message successfully!');
         return response()->json('Send message successfully!', Response::HTTP_OK);

@@ -19,7 +19,7 @@ Route::post('insert', 'Api\UserController@insertUser');
 
 Route::post('auth/register', 'Api\UserController@register');
 Route::post('auth/login', 'Api\UserController@login');
-
+Route::post('auth/confirm', 'Api\UserController@confirm');
 Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('users', 'Api\UserController@getUsers');
     Route::get('auth', 'Api\UserController@user');
@@ -30,6 +30,12 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     //insert to order
     Route::post('insert-order', 'Api\OrderController@insertToOrder');
     
+    //add to cart
+    Route::post('add-to-cart', 'Api\CartController@addToCart');
+    //get list cart
+    Route::post('list-cart', 'Api\CartController@getListCart');
+    //remove by cart id
+    Route::post('remove-cart-item', 'Api\CartController@removeByCartId');
 });
 
 

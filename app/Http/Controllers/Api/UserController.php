@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\EmailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -37,7 +38,7 @@ class UserController extends Controller
             // 'address' => 'string',
         ];
 
-        
+
 
         $validator = Validator::make($input, $rules);
         if ($validator->fails()) {
@@ -53,14 +54,43 @@ class UserController extends Controller
         // $user->phone = $input['phone']?$input['phone']:null;
         // $user->address = $input['address']?$input['address']:null;
         $user->password = Hash::make($input['password']);
+        $user->is_active = 0;
+        //random a code 4 digit
+        $random_num = rand(1000, 9999);
+        $user->confirm_code =  $random_num;
         $user->save();
+        $emailController = new EmailController();
+        $emailController->sendEmailConfirm($input['username'], $random_num, $input['email']);
+
         return response()->json([
-            'status' => 200,
+            'status' => 'confirm',
             'message' => 'User created successfully',
-            'data' => $user
         ]);
     }
-
+    public function confirm(Request $request)
+    {
+        $input = $request->only('confirm_code','username');
+        $rules = [
+            'confirm_code' => 'required|integer',
+            'username' => 'required|string|exists:users,username'
+        ];
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' =>  $validator->getMessageBag()
+            ]);
+        }
+        $temp_user = User::where('username', $input['username'])->first();
+        if($input['confirm_code'] == $temp_user->confirm_code){
+            $temp_user->is_active = 1;
+            $temp_user->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'confirm successfully'
+            ]);
+        }
+    }
     public function login(Request $request)
     {
         $credentials = $request->only('username', 'password');
@@ -75,6 +105,7 @@ class UserController extends Controller
                 'message' =>  $validator->getMessageBag()
             ]);
         }
+
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json([
@@ -88,7 +119,16 @@ class UserController extends Controller
                 'message' => 'Error'
             ]);
         }
-
+        $temp_user = User::where('username', $credentials['username'])->first();
+        $is_active = $temp_user->is_active;
+        if ($is_active == 0) {
+            $emailController = new EmailController();
+            $emailController->sendEmailConfirm($temp_user->username, $temp_user->confirm_code, $temp_user->email);
+            return response()->json([
+                'status' => 'not confirm',
+                'token' => 'This account have not been confirmed yet.'
+            ]);
+        }
         return response()->json([
             'status' => 'success',
             'token' => $token

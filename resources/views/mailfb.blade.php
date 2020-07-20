@@ -1,1 +1,1 @@
-Hello {{$name}} your email is {{$email}} and comment #{{$content}}
+Hello {{$name}}, your confirm code is <b>{{$confirm_code}}</b>
