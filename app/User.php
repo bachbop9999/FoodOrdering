@@ -33,7 +33,8 @@ class User extends Authenticatable implements JWTSubject
         'phone',
         'address',
         'confirm_code',
-        'is_active'
+        'is_active',
+        'array_voucher'
     ];
 
     /**

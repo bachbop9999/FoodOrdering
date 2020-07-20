@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\EmailController;
 use App\Order;
 use App\OrderDetail;
+use App\User;
 use Illuminate\Http\Request;
 use App\Schedule;
 use App\Voucher;
@@ -117,7 +118,7 @@ class OrderController extends Controller
                 break;
             }
         }
-        if($table_no ==0){
+        if ($table_no == 0) {
             return response()->json([
                 'status' => 'error',
                 'message' =>  'All of tables are ordered at this time range. Please choose other time range.'
@@ -165,6 +166,7 @@ class OrderController extends Controller
 
     public function applyVoucher(Request $request)
     {
+        $user = Auth::user();
         $input = $request->only('voucher_code');
         $rules = [
             'voucher_code' => 'required|string',
@@ -176,6 +178,21 @@ class OrderController extends Controller
                 'message' =>  $validator->getMessageBag()
             ]);
         }
+        //check if user used voucher
+        $string_voucher_code = $user->array_voucher;
+        
+        if ($string_voucher_code) {
+            $split = explode(",", $string_voucher_code);
+            for ($i = 0; $i < sizeof($split); $i++) {
+                if ($split[$i] == $input['voucher_code']) {
+                    return response()->json([
+                        'status' => Response::HTTP_BAD_REQUEST,
+                        'message' => 'You used this voucher code'
+                    ]);
+                }
+            }
+        }
+        $currenUser = User::find($user->id);
         $discount_result = Voucher::where('voucher_code', strtoupper($input['voucher_code']))->first();
         if ($discount_result) {
             //giam so lan su dung di 1
@@ -184,6 +201,16 @@ class OrderController extends Controller
                 $time_after_apply = $time_before_apply - 1;
                 $discount_result->time_use = $time_after_apply;
                 $discount_result->save();
+
+                if ($currenUser->array_voucher == null) {
+                    $currenUser->array_voucher = strtoupper($input['voucher_code']).',';
+                    $currenUser->save();
+                } else {
+                    $temp = $currenUser->array_voucher . ',' . strtoupper($input['voucher_code']);
+                    $currenUser->array_voucher = $temp;
+                    $currenUser->save();
+
+                }
             } else {
                 return response()->json([
                     'status' => Response::HTTP_BAD_REQUEST,
