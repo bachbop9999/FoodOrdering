@@ -213,7 +213,7 @@ class OrderController extends Controller
                     $currenUser->array_voucher = strtoupper($input['voucher_code']).',';
                     $currenUser->save();
                 } else {
-                    $temp = $currenUser->array_voucher . ',' . strtoupper($input['voucher_code']);
+                    $temp = $currenUser->array_voucher.strtoupper($input['voucher_code']);
                     $currenUser->array_voucher = $temp;
                     $currenUser->save();
 
