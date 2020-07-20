@@ -66,7 +66,7 @@ class OrderController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' =>  $validator->getMessageBag()
+                'message' =>  'Did you forget something? T.T'
             ]);
         }
         //check time valid or not
