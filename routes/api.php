@@ -36,6 +36,9 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::post('list-cart', 'Api\CartController@getListCart');
     //remove by cart id
     Route::post('remove-cart-item', 'Api\CartController@removeByCartId');
+
+    //get list payment
+    Route::post('list-payment', 'Api\PaymentController@getListPayment');
 });
 
 
