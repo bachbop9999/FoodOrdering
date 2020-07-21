@@ -98,7 +98,7 @@ class ProductController extends Controller
         
         if ($request->exists('keyword')) {
             // $search_product = Product::where('name', 'like' ,'%'.$input['keyword'].'%')->get();
-            $search_product = Product::whereRaw('LOWER(name) LIKE '%'?'%'',[trim(strtolower($input['keyword']))])->get();
+            $search_product = Product::whereRaw("LOWER(name) LIKE '%?%'",[trim(strtolower($input['keyword']))])->get();
         }else{
             $search_product = Product::get();
         }
