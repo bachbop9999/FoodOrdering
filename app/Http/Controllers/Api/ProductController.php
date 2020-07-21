@@ -95,8 +95,9 @@ class ProductController extends Controller
                 'message' =>  $validator->getMessageBag()
             ]);
         }
-        $temp = trim(strtolower($input['keyword']));
+        
         if ($request->exists('keyword')) {
+            $temp = trim(strtolower($input['keyword']));
             // $search_product = Product::where('name', 'like' ,'%'.$input['keyword'].'%')->get();
             $search_product = Product::whereRaw('LOWER(name) LIKE (?)',["%{$temp}%"])->get();
         }else{
