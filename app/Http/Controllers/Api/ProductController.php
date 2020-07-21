@@ -30,7 +30,7 @@ class ProductController extends Controller
 
     public function getNewProduct(Request $request)
     {
-        
+
         $input = $request->only('category_id');
         $rules = [
             'category_id' => 'required|integer|exists:categories,id'
@@ -79,5 +79,29 @@ class ProductController extends Controller
         }
         $detailProduct = Product::find($input['id']);
         return response()->json($detailProduct, Response::HTTP_OK);
+    }
+
+    public function searchProduct(Request $request)
+    {
+        $input = $request->only('keyword');
+        $rules = [
+            'keyword' => 'nullable|string'
+        ];
+
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' =>  $validator->getMessageBag()
+            ]);
+        }
+        
+        if ($request->exists('keyword')) {
+            $search_product = Product::where('name', 'like' ,'%'.$input['keyword'].'%')->get();
+        }else{
+            $search_product = Product::get();
+        }
+
+        return response()->json($search_product, Response::HTTP_OK);
     }
 }
