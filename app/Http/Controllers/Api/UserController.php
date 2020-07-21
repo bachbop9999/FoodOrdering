@@ -252,7 +252,7 @@ class UserController extends Controller
             'status' => 'success',
             'message' =>  'Change password successfully.'
         ]);
-        
-       
     }
+
+    
 }

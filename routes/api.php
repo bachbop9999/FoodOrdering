@@ -22,8 +22,8 @@ Route::post('auth/login', 'Api\UserController@login');
 Route::post('auth/confirm', 'Api\UserController@confirm');
 Route::post('auth/forgot-password', 'Api\UserController@resetPassword');
 Route::group(['middleware' => 'jwt.auth'], function () {
-    Route::get('users', 'Api\UserController@getUsers');
-    Route::get('auth', 'Api\UserController@user');
+    // Route::get('users', 'Api\UserController@getUsers');
+    Route::post('user-info', 'Api\UserController@user');
     Route::post('logout', 'Api\UserController@logout');
     //apply voucher code
     Route::post('apply-voucher', 'Api\OrderController@applyVoucher');
