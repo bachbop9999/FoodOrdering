@@ -29,23 +29,37 @@ class UserController extends Controller
     {
         $input = $request->only('email', 'password', 'username', 'fullname');
 
-        $rules = [
-            'email' => 'required|email||unique:users',
-            'password' => 'required|string|min:6',
+        $rules_require = [
+            'email' => 'required|email',
+            'password' => 'required|string',
             'fullname' => 'required|string',
-            'username' => 'required|string|unique:users',
+            'username' => 'required|string',
             // 'phone' => 'string|min:10|max:10',
             // 'address' => 'string',
         ];
 
-
-
-        $validator = Validator::make($input, $rules);
+        $rules_other = [
+            'email' => 'unique:users',
+            'password' => 'min:6',
+            'username' => 'unique:users',
+            // 'phone' => 'string|min:10|max:10',
+            // 'address' => 'string',
+        ];
+        $validator = Validator::make($input, $rules_require);
         if ($validator->fails()) {
+            return response()->json([
+                'status' => 'require',
+                'message' =>  $validator->getMessageBag()
+            ]);
+
+        }
+        $validator_other = Validator::make($input, $rules_other);
+        if ($validator_other->fails()) {
             return response()->json([
                 'status' => 'error',
                 'message' =>  $validator->getMessageBag()
             ]);
+
         }
         $user = new User();
         $user->email = $input['email'];
