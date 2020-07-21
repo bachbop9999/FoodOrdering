@@ -59,7 +59,7 @@ class ProductController extends Controller
                 'message' =>  $validator->getMessageBag()
             ]);
         }
-        $priceProduct = Product::where('category_id', $input['category_id'])->get();
+        $priceProduct = Product::where('category_id', $input['category_id'])->orderBy('price')->get();
         return response()->json($priceProduct, Response::HTTP_OK);
     }
 

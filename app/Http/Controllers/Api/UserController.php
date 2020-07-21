@@ -213,4 +213,46 @@ class UserController extends Controller
         }
         return $randomString;
     }
+
+    public function changePassword(Request $request){
+        $user = Auth::user();
+        $input = $request->only('password','new_password');
+        $rules = [
+            'password' => 'required|string',
+            'new_password' => 'required|string|min:6'
+        ];
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' =>  $validator->getMessageBag()
+            ]);
+        }
+        $input_password = $input['password'];
+        $new_password = $input['new_password'];
+        //check current password
+        if (!(Hash::check($input_password, $user->password))) {
+            // The passwords matches
+            return response()->json([
+                'status' => 'error',
+                'message' =>  'Your current password does not matches with the password you provided. Please try again.'
+            ]);
+        }
+        if(strcmp($input_password, $new_password) == 0){
+            //Current password and new password are same
+            return response()->json([
+                'status' => 'error',
+                'message' =>  'New Password cannot be same as your current password. Please choose a different password.'
+            ]);
+        }
+        $current_user = User::find($user->id);
+        $current_user->password = Hash::make($new_password);
+        $current_user->save();
+        return response()->json([
+            'status' => 'success',
+            'message' =>  'Change password successfully.'
+        ]);
+        
+       
+    }
 }

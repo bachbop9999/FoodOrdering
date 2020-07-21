@@ -46,6 +46,9 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
     //get list order
     Route::post('list-receipt', 'Api\OrderController@getListOrder');
+
+    //change passWord
+    Route::post('/auth/change-password', 'Api\UserController@changePassword');
 });
 
 
