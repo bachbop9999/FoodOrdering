@@ -27,22 +27,23 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        $input = $request->only('email', 'password', 'username', 'fullname');
+        $input = $request->only('email', 'password', 'username', 'fullname', 'phone');
 
         $rules_require = [
-            'email' => 'required|email',
+            'email' => 'required',
             'password' => 'required|string',
             'fullname' => 'required|string',
             'username' => 'required|string',
+            'phone' => 'required|numeric'
             // 'phone' => 'string|min:10|max:10',
             // 'address' => 'string',
         ];
-
+        
         $rules_other = [
-            'email' => 'unique:users',
+            'email' => 'email|unique:users',
             'password' => 'min:6',
             'username' => 'unique:users',
-            // 'phone' => 'string|min:10|max:10',
+            'phone' => 'digits:10',
             // 'address' => 'string',
         ];
         $validator = Validator::make($input, $rules_require);
@@ -65,7 +66,7 @@ class UserController extends Controller
         $user->email = $input['email'];
         // $user->fullname = $input['fullname']?$input['fullname']:null;
         $user->username = $input['username'];
-        // $user->phone = $input['phone']?$input['phone']:null;
+        $user->phone = $input['phone'];
         // $user->address = $input['address']?$input['address']:null;
         $user->password = Hash::make($input['password']);
         $user->is_active = 0;
