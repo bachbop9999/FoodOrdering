@@ -169,7 +169,7 @@ class OrderController extends Controller
          ]);
     }
     public function getListVoucher(){
-        $listVoucher = DB::table('voucher')->select('voucher_code')->get();
+        $listVoucher = DB::table('voucher')->select('voucher_code','discount')->get();
         return response()->json([
             'status' => Response::HTTP_OK,
             'data' => $listVoucher,
