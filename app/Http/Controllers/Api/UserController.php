@@ -161,4 +161,41 @@ class UserController extends Controller
 
         return response(null, Response::HTTP_BAD_REQUEST);
     }
+    public function resetPassword(Request $request){
+        $input = $request->only('username');
+        $rules = [
+            'username' => 'required|string|exists:users,username'
+        ];
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' =>  $validator->getMessageBag()
+            ]);
+        }
+        $current_user = User::where('username', $input['username'])->first();
+        $new_password = $this->generateRandomString();
+        $current_user->password = Hash::make($new_password);
+        $current_user->save();
+       
+        //send mail reset pass
+        $emailController = new EmailController();
+        $emailController->sendMailResetPassword($current_user->email, $new_password);
+
+        return response()->json([
+            'status' => Response::HTTP_OK,
+            'message' => 'A new password will be sent to your email.'
+        ]);
+
+
+    }
+    public function generateRandomString() {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 10; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
 }

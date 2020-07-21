@@ -26,4 +26,10 @@ class EmailController extends Controller
         return response()->json('Send message successfully!', Response::HTTP_OK);
     }
 
+    public function sendMailResetPassword($email, $new_password){
+        Mail::send('mailResetPass', array('new_password'=>$new_password), function($message) use ($email){
+	        $message->to($email, 'HEROIN RESTAURANT')->subject('Reset password');
+	    });
+    }
+
 }

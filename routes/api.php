@@ -20,6 +20,7 @@ Route::post('insert', 'Api\UserController@insertUser');
 Route::post('auth/register', 'Api\UserController@register');
 Route::post('auth/login', 'Api\UserController@login');
 Route::post('auth/confirm', 'Api\UserController@confirm');
+Route::post('auth/forgot-password', 'Api\UserController@resetPassword');
 Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('users', 'Api\UserController@getUsers');
     Route::get('auth', 'Api\UserController@user');
@@ -62,5 +63,3 @@ Route::post('categories', 'Api\CategoryController@getListCategory');
 
 Route::middleware('jwt.refresh')->get('/token/refresh', 'Api\UserController@refresh');
 
-//send mail
-Route::post('send-mail', 'EmailController@sendEmail');
