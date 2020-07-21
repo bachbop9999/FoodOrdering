@@ -57,7 +57,7 @@ class UserController extends Controller
         if ($validator_other->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' =>  $validator->getMessageBag()
+                'message' =>  $validator_other->getMessageBag()
             ]);
 
         }
