@@ -39,6 +39,12 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
     //get list payment
     Route::post('list-payment', 'Api\PaymentController@getListPayment');
+
+    //get list of voucher
+    Route::post('list-voucher', 'Api\OrderController@getListVoucher');
+
+    //get list order
+    Route::post('list-receipt', 'Api\OrderController@getListOrder');
 });
 
 
@@ -46,6 +52,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 //test
 Route::get('test', 'Api\OrderController@test');
 Route::post('test2', 'Api\OrderController@test2');
+
 //outside jwt
 Route::post('products-popular', 'Api\ProductController@getPopularProduct');
 Route::post('products-newest', 'Api\ProductController@getNewProduct');
