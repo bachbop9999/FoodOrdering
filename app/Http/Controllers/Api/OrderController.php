@@ -143,9 +143,13 @@ class OrderController extends Controller
         Cart::where('user_id',$user->id)->delete();
 
         $data_return = [
-            'orderId' => $order->id,
-            'created_date' => Carbon::now()->format('d-m-Y G:i'),
-            'total_price' => $order->total_price
+            'order_id' => $order->id,
+            'total_price' => $order->total_price,
+            'status' => $order->status,
+            'date_order' => Carbon::parse($schedule->date_order)->format('d-m-Y'),
+            'time_from' => Carbon::parse($schedule->time_from)->format('G:i'),
+            'time_to' => Carbon::parse($schedule->time_to)->format('G:i'),
+            'table_no' => $schedule->table_id
 
         ];
         return response()->json([
