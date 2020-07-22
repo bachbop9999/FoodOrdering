@@ -52,6 +52,9 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
     //detail of order
     Route::post('detail-receipt', 'Api\OrderController@getDetailOrder');
+
+    //change profile
+    Route::post('edit-profile', 'Api\UserController@editProfile');
 });
 
 

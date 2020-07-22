@@ -82,6 +82,32 @@ class UserController extends Controller
             'message' => 'User created successfully',
         ]);
     }
+    public function editProfile(Request $request){
+        $user = Auth::user();
+        $input = $request->only('fullname', 'phone');
+
+        $rules_require = [
+            'fullname' => 'required|string',
+            'phone' => 'required|numeric|digits:10'
+        ];
+        $validator = Validator::make($input, $rules_require);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'require',
+                'message' =>  $validator->getMessageBag()
+            ]);
+
+        }
+        $current_user = User::find($user->id);
+        $current_user->fullname = $input['fullname'];
+        $current_user->phone = $input['phone'];
+        $current_user->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Change profile successfully',
+        ]);
+
+    }
     public function confirm(Request $request)
     {
         $input = $request->only('confirm_code','username');
