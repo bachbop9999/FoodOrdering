@@ -49,6 +49,9 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
     //change passWord
     Route::post('/auth/change-password', 'Api\UserController@changePassword');
+
+    //detail of order
+    Route::post('detail-receipt', 'Api\OrderController@getDetailOrder');
 });
 
 

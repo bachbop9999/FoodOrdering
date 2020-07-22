@@ -7,6 +7,7 @@ use App\Http\Controllers\EmailController;
 use App\Order;
 use App\OrderDetail;
 use App\User;
+use App\Cart;
 use Illuminate\Http\Request;
 use App\Schedule;
 use App\Voucher;
@@ -137,6 +138,9 @@ class OrderController extends Controller
         //send mail
         $emailController = new EmailController();
         $emailController->sendEmailOrder($user->email, $user->fullname, $order->id, $date, $time_from, $time_to, $table_no);
+        
+        //clear cart
+        Cart::where('user_id',$user->id)->delete();
 
         $data_return = [
             'orderId' => $order->id,
@@ -158,7 +162,8 @@ class OrderController extends Controller
         foreach ($listOrderByUserId as $item) {
             $temp_data = [
                'orderId' => $item->id,
-               'created_date' => Carbon::parse($item->created_at)->format('d-m-Y G:i'),
+               'created_date' => Carbon::parse($item->created_at)->format('d-m-Y'),
+               'created_time' => Carbon::parse($item->created_at)->format('G:i'),
                'total_price' => $item->total_price
             ];
             array_push($data_array, $temp_data);
@@ -166,6 +171,35 @@ class OrderController extends Controller
         return response()->json([
             'status' => Response::HTTP_OK,
             'data' => $data_array,
+         ]);
+    }
+    public function getDetailOrder(Request $request){
+        $input = $request->only('order_id');
+        $rules = [
+            'order_id' => 'required|integer|exists:orders,id',
+        ];
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' =>  $validator->getMessageBag()
+            ]);
+        }
+        $order_id = $input['order_id'];
+        $order = Order::find($order_id);
+        $schedule = Schedule::where('order_id',$order_id)->first();
+        $data_detail_order = [
+            'order_id' => $order_id,
+            'total_price' => $order->total_price,
+            'status' => $order->status,
+            'date_order' => Carbon::parse($schedule->date_order)->format('d-m-Y'),
+            'time_from' => Carbon::parse($schedule->time_from)->format('G:i'),
+            'time_to' => Carbon::parse($schedule->time_to)->format('G:i'),
+            'table_no' => $schedule->table_id
+        ];
+        return response()->json([
+            'status' => Response::HTTP_OK,
+            'data' => $data_detail_order,
          ]);
     }
     public function getListVoucher(){
