@@ -42,6 +42,7 @@ class OrderController extends Controller
             'date' => 'required|date',
             'time_from' => 'required',
             'time_to' => 'required',
+            'voucher_code' => 'string',
             'cart' => 'required|array'
         ];
         $validator = Validator::make($input, $rules);
@@ -107,6 +108,33 @@ class OrderController extends Controller
             ]);
         }
 
+        //process with voucher code
+        $currenUser = User::find($user->id);
+        $discount_result = Voucher::where('voucher_code', strtoupper($input['voucher_code']))->first();
+        if ($discount_result) {
+            //giam so lan su dung di 1
+            $time_before_apply =  Voucher::where('id', $discount_result->id)->first()->time_use;
+            if ($time_before_apply != 0) {
+                $time_after_apply = $time_before_apply - 1;
+                $discount_result->time_use = $time_after_apply;
+                $discount_result->save();
+                // them voucher vao bang user
+                if ($currenUser->array_voucher == null) {
+                    $currenUser->array_voucher = strtoupper($input['voucher_code']).',';
+                    $currenUser->save();
+                } else {
+                    $temp = $currenUser->array_voucher.strtoupper($input['voucher_code']).',';
+                    $currenUser->array_voucher = $temp;
+                    $currenUser->save();
+
+                }
+            }else{
+                return response()->json([
+                    'status' => Response::HTTP_BAD_REQUEST,
+                    'message' => 'This code has expired'
+                ]);
+            }  
+        }
 
         //save to order
         $order = new Order();
@@ -114,6 +142,7 @@ class OrderController extends Controller
         $order->status = $input['status'];
         // $order->user_id = $user->id;
         $order->user_id = $user->id;
+        $order->voucher_id = $discount_result->id;
         $order->payment_id = $input['payment_id'];
         $order->save();
 
@@ -134,6 +163,8 @@ class OrderController extends Controller
         $schedule->time_from = $time_from;
         $schedule->time_to = $time_to;
         $schedule->save();
+        
+        
 
         //send mail
         $emailController = new EmailController();
@@ -231,6 +262,12 @@ class OrderController extends Controller
         if(!$discount_result){
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'This code is invalid'
+            ]);
+        }
+        if($discount_result->time_use == 0){
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
                 'message' => 'This code has expired'
             ]);
         }
@@ -248,36 +285,12 @@ class OrderController extends Controller
                 }
             }
         }
-        $currenUser = User::find($user->id);
-       
-        if ($discount_result) {
-            //giam so lan su dung di 1
-            $time_before_apply =  Voucher::where('id', $discount_result->id)->first()->time_use;
-            if ($time_before_apply != 0) {
-                $time_after_apply = $time_before_apply - 1;
-                $discount_result->time_use = $time_after_apply;
-                $discount_result->save();
+        
 
-                if ($currenUser->array_voucher == null) {
-                    $currenUser->array_voucher = strtoupper($input['voucher_code']).',';
-                    $currenUser->save();
-                } else {
-                    $temp = $currenUser->array_voucher.strtoupper($input['voucher_code']);
-                    $currenUser->array_voucher = $temp;
-                    $currenUser->save();
-
-                }
-            }
-
-
-            return response()->json([
-                'status' => Response::HTTP_OK,
-                'discount' => $discount_result->discount,
-            ]);
-        }
         return response()->json([
-            'status' => Response::HTTP_BAD_REQUEST,
-            'message' => 'Invalid Code'
+            'status' => Response::HTTP_OK,
+            'discount' => $discount_result->discount,
         ]);
+       
     }
 }
