@@ -110,6 +110,21 @@ class OrderController extends Controller
 
         //process with voucher code
         $currenUser = User::find($user->id);
+         //check if user used voucher
+         $string_voucher_code = $user->array_voucher;
+        
+         if ($string_voucher_code) {
+             $split = explode(",", $string_voucher_code);
+             for ($i = 0; $i < sizeof($split); $i++) {
+                 if ($split[$i] == $input['voucher_code']) {
+                     return response()->json([
+                         'status' => Response::HTTP_BAD_REQUEST,
+                         'message' => 'You used this voucher code'
+                     ]);
+                 }
+             }
+         }
+         
         $discount_result = Voucher::where('voucher_code', strtoupper($input['voucher_code']))->first();
         if ($discount_result) {
             //giam so lan su dung di 1
