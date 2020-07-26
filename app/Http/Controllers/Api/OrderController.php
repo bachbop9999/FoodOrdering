@@ -109,7 +109,7 @@ class OrderController extends Controller
 
         //process with voucher code
         $currenUser = User::find($user->id);
-
+        $discount_result = null;
         if ($input['voucher_code'] == "") {
             //check if user used voucher
             $string_voucher_code = $user->array_voucher;
@@ -162,7 +162,7 @@ class OrderController extends Controller
         $order->status = $input['status'];
         // $order->user_id = $user->id;
         $order->user_id = $user->id;
-        if ($discount_result) {
+        if ($discount_result != null) {
             $order->voucher_id = $discount_result->id;
         } else {
             $order->voucher_id = null;
