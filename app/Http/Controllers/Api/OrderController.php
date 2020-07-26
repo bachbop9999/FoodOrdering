@@ -152,6 +152,11 @@ class OrderController extends Controller
                         'message' => 'This code has expired'
                     ]);
                 }
+            }else{
+                return response()->json([
+                    'status' => Response::HTTP_BAD_REQUEST,
+                    'message' => 'This code is invalid'
+                ]);
             }
         }
 
