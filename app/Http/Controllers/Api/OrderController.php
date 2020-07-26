@@ -79,7 +79,7 @@ class OrderController extends Controller
         }
 
         $number_of_table = DB::table('table_order')->count();
-
+        
 
         //get schedule of choosen day
         $schedule_of_choosen_date = Schedule::where('date_order', $date)->get();
@@ -114,7 +114,10 @@ class OrderController extends Controller
         
          if ($string_voucher_code) {
              $split = explode(",", $string_voucher_code);
-             for ($i = 0; $i < sizeof($split); $i++) {
+             for ($i = 0; $i < sizeof($split)-1; $i++) {
+                //  if($split[$i] == ""){
+                //      continue;
+                //  }
                  if ($split[$i] == $input['voucher_code']) {
                      return response()->json([
                          'status' => Response::HTTP_BAD_REQUEST,
