@@ -42,7 +42,6 @@ class OrderController extends Controller
             'date' => 'required|date',
             'time_from' => 'required',
             'time_to' => 'required',
-            'voucher_code' => 'string',
             'cart' => 'required|array'
         ];
         $validator = Validator::make($input, $rules);
