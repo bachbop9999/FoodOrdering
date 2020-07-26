@@ -110,7 +110,7 @@ class OrderController extends Controller
         //process with voucher code
         $currenUser = User::find($user->id);
         $discount_result = null;
-        if ($input['voucher_code'] == "") {
+        if ($input['voucher_code'] != "") {
             //check if user used voucher
             $string_voucher_code = $user->array_voucher;
 
