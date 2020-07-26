@@ -157,7 +157,12 @@ class OrderController extends Controller
         $order->status = $input['status'];
         // $order->user_id = $user->id;
         $order->user_id = $user->id;
-        $order->voucher_id = $discount_result->id;
+        if($discount_result){
+            $order->voucher_id = $discount_result->id;
+        }else{
+            $order->voucher_id = null;
+        }
+       
         $order->payment_id = $input['payment_id'];
         $order->save();
 
