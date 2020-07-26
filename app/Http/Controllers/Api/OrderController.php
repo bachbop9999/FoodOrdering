@@ -79,7 +79,7 @@ class OrderController extends Controller
         }
 
         $number_of_table = DB::table('table_order')->count();
-        
+
 
         //get schedule of choosen day
         $schedule_of_choosen_date = Schedule::where('date_order', $date)->get();
@@ -109,49 +109,52 @@ class OrderController extends Controller
 
         //process with voucher code
         $currenUser = User::find($user->id);
-         //check if user used voucher
-         $string_voucher_code = $user->array_voucher;
-        
-         if ($string_voucher_code) {
-             $split = explode(",", $string_voucher_code);
-             for ($i = 0; $i < sizeof($split)-1; $i++) {
-                //  if($split[$i] == ""){
-                //      continue;
-                //  }
-                 if ($split[$i] == $input['voucher_code']) {
-                     return response()->json([
-                         'status' => Response::HTTP_BAD_REQUEST,
-                         'message' => 'You used this voucher code'
-                     ]);
-                 }
-             }
-         }
-         
-        $discount_result = Voucher::where('voucher_code', strtoupper($input['voucher_code']))->first();
-        if ($discount_result) {
-            //giam so lan su dung di 1
-            $time_before_apply =  Voucher::where('id', $discount_result->id)->first()->time_use;
-            if ($time_before_apply != 0) {
-                $time_after_apply = $time_before_apply - 1;
-                $discount_result->time_use = $time_after_apply;
-                $discount_result->save();
-                // them voucher vao bang user
-                if ($currenUser->array_voucher == null) {
-                    $currenUser->array_voucher = strtoupper($input['voucher_code']).',';
-                    $currenUser->save();
-                } else {
-                    $temp = $currenUser->array_voucher.strtoupper($input['voucher_code']).',';
-                    $currenUser->array_voucher = $temp;
-                    $currenUser->save();
 
+        if ($input['voucher_code'] == "") {
+            //check if user used voucher
+            $string_voucher_code = $user->array_voucher;
+
+            if ($string_voucher_code) {
+                $split = explode(",", $string_voucher_code);
+                for ($i = 0; $i < sizeof($split) - 1; $i++) {
+                    //  if($split[$i] == ""){
+                    //      continue;
+                    //  }
+                    if ($split[$i] == $input['voucher_code']) {
+                        return response()->json([
+                            'status' => Response::HTTP_BAD_REQUEST,
+                            'message' => 'You used this voucher code'
+                        ]);
+                    }
                 }
-            }else{
-                return response()->json([
-                    'status' => Response::HTTP_BAD_REQUEST,
-                    'message' => 'This code has expired'
-                ]);
-            }  
+            }
+
+            $discount_result = Voucher::where('voucher_code', strtoupper($input['voucher_code']))->first();
+            if ($discount_result) {
+                //giam so lan su dung di 1
+                $time_before_apply =  Voucher::where('id', $discount_result->id)->first()->time_use;
+                if ($time_before_apply != 0) {
+                    $time_after_apply = $time_before_apply - 1;
+                    $discount_result->time_use = $time_after_apply;
+                    $discount_result->save();
+                    // them voucher vao bang user
+                    if ($currenUser->array_voucher == null) {
+                        $currenUser->array_voucher = strtoupper($input['voucher_code']) . ',';
+                        $currenUser->save();
+                    } else {
+                        $temp = $currenUser->array_voucher . strtoupper($input['voucher_code']) . ',';
+                        $currenUser->array_voucher = $temp;
+                        $currenUser->save();
+                    }
+                } else {
+                    return response()->json([
+                        'status' => Response::HTTP_BAD_REQUEST,
+                        'message' => 'This code has expired'
+                    ]);
+                }
+            }
         }
+
 
         //save to order
         $order = new Order();
@@ -159,12 +162,12 @@ class OrderController extends Controller
         $order->status = $input['status'];
         // $order->user_id = $user->id;
         $order->user_id = $user->id;
-        if($discount_result){
+        if ($discount_result) {
             $order->voucher_id = $discount_result->id;
-        }else{
+        } else {
             $order->voucher_id = null;
         }
-       
+
         $order->payment_id = $input['payment_id'];
         $order->save();
 
@@ -185,15 +188,15 @@ class OrderController extends Controller
         $schedule->time_from = $time_from;
         $schedule->time_to = $time_to;
         $schedule->save();
-        
-        
+
+
 
         //send mail
         $emailController = new EmailController();
         $emailController->sendEmailOrder($user->email, $user->fullname, $order->id, $date, $time_from, $time_to, $table_no);
-        
+
         //clear cart
-        Cart::where('user_id',$user->id)->delete();
+        Cart::where('user_id', $user->id)->delete();
 
         $data_return = [
             'order_id' => $order->id,
@@ -212,25 +215,27 @@ class OrderController extends Controller
         ]);
     }
 
-    public function getListOrder(){
+    public function getListOrder()
+    {
         $user = Auth::user();
         $listOrderByUserId = Order::where('user_id', $user->id)->get();
         $data_array = [];
         foreach ($listOrderByUserId as $item) {
             $temp_data = [
-               'orderId' => $item->id,
-               'created_date' => Carbon::parse($item->created_at)->format('d-m-Y'),
-               'created_time' => Carbon::parse($item->created_at)->format('G:i'),
-               'total_price' => $item->total_price
+                'orderId' => $item->id,
+                'created_date' => Carbon::parse($item->created_at)->format('d-m-Y'),
+                'created_time' => Carbon::parse($item->created_at)->format('G:i'),
+                'total_price' => $item->total_price
             ];
             array_push($data_array, $temp_data);
         }
         return response()->json([
             'status' => Response::HTTP_OK,
             'data' => $data_array,
-         ]);
+        ]);
     }
-    public function getDetailOrder(Request $request){
+    public function getDetailOrder(Request $request)
+    {
         $input = $request->only('order_id');
         $rules = [
             'order_id' => 'required|integer|exists:orders,id',
@@ -244,7 +249,7 @@ class OrderController extends Controller
         }
         $order_id = $input['order_id'];
         $order = Order::find($order_id);
-        $schedule = Schedule::where('order_id',$order_id)->first();
+        $schedule = Schedule::where('order_id', $order_id)->first();
         $data_detail_order = [
             'order_id' => $order_id,
             'total_price' => $order->total_price,
@@ -257,10 +262,11 @@ class OrderController extends Controller
         return response()->json([
             'status' => Response::HTTP_OK,
             'data' => $data_detail_order,
-         ]);
+        ]);
     }
-    public function getListVoucher(){
-        $listVoucher = DB::table('voucher')->select('voucher_code','discount')->get();
+    public function getListVoucher()
+    {
+        $listVoucher = DB::table('voucher')->select('voucher_code', 'discount')->get();
         return response()->json([
             'status' => Response::HTTP_OK,
             'data' => $listVoucher,
@@ -281,13 +287,13 @@ class OrderController extends Controller
             ]);
         }
         $discount_result = Voucher::where('voucher_code', strtoupper($input['voucher_code']))->first();
-        if(!$discount_result){
+        if (!$discount_result) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
                 'message' => 'This code is invalid'
             ]);
         }
-        if($discount_result->time_use == 0){
+        if ($discount_result->time_use == 0) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
                 'message' => 'This code has expired'
@@ -295,7 +301,7 @@ class OrderController extends Controller
         }
         //check if user used voucher
         $string_voucher_code = $user->array_voucher;
-        
+
         if ($string_voucher_code) {
             $split = explode(",", $string_voucher_code);
             for ($i = 0; $i < sizeof($split); $i++) {
@@ -307,12 +313,11 @@ class OrderController extends Controller
                 }
             }
         }
-        
+
 
         return response()->json([
             'status' => Response::HTTP_OK,
             'discount' => $discount_result->discount,
         ]);
-       
     }
 }
